@@ -4,7 +4,7 @@ class ReviewsController < ApplicationController
   # GET /reviews
   # GET /reviews.json
   def index
-    @reviews = Review.all
+    @reviews = Review.order('id desc').limit(5)
   end
 
   # GET /reviews/1
@@ -14,7 +14,16 @@ class ReviewsController < ApplicationController
 
   # GET /reviews/new
   def new
-    @review = Review.new
+    if (session[:user_id])
+      @review = Review.new
+      respond_to do |format|
+      format.html # new.html.erb
+      format.xml  { render :xml => @review }
+      end
+    else
+       flash[:notice] = "Please log on to post"
+       redirect_to '/reviews'
+    end
   end
 
   # GET /reviews/1/edit
@@ -60,6 +69,49 @@ class ReviewsController < ApplicationController
       format.json { head :no_content }
     end
   end
+
+    def comment
+        Review.find(params[:id]).comments.create(params[:comment])
+        redirect_to :action => "show", :id => params[:id]
+    end
+
+    def search
+        pattern = params[:searchFor]
+        pattern = "%" + pattern + "%"
+
+        @reviews = Review.where("title like ?", pattern)
+    end
+
+    def newuser
+        respond_to do |format|
+            user = User.new
+            user.userid = params[:userid]
+            user.password = params[:password]
+            user.fullname = params[:fullname]
+            user.email = params[:email]
+        if user.save
+            session[:user_id] = user.userid
+            flash[:notice] = 'New User ID was successfully created.'
+        else
+            flash[:notice] = 'Sorry, User ID already exists.'
+        end
+            format.html {redirect_to '/reviews' }
+        end
+    end
+
+    def validate
+
+    respond_to do |format|
+        user = User.authenticate(params[:userid], params[:password])
+        if user
+            session[:user_id] = user.userid
+            flash[:notice] = 'User successfully logged in'
+        else
+            flash[:notice] = 'Invalid user/password'
+        end
+        format.html {redirect_to '/reviews' }
+        end
+    end
 
   private
     # Use callbacks to share common setup or constraints between actions.

@@ -11,12 +11,39 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141020181304) do
+ActiveRecord::Schema.define(version: 20141020194405) do
+
+  create_table "comments", force: true do |t|
+    t.datetime "date"
+    t.string   "poster"
+    t.text     "comment"
+    t.integer  "review_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "news", force: true do |t|
+    t.datetime "date"
+    t.string   "title"
+    t.text     "article"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "reviews", force: true do |t|
     t.string   "poster"
     t.datetime "date"
     t.text     "article"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "title"
+  end
+
+  create_table "users", force: true do |t|
+    t.string   "userid"
+    t.string   "password"
+    t.string   "fullname"
+    t.string   "email"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

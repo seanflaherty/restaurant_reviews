@@ -1,0 +1,13 @@
+defaults: &defaults
+  adapter: mysql
+  username: root
+  password: 0gz3Zhpd
+  host: localhost
+
+development:
+  <<: *defaults
+  database: restaurant_reviews_development
+
+test:
+  <<: *defaults
+  database: restaurant_reviews_test
